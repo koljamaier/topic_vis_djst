@@ -36,6 +36,7 @@ for file_name in list_of_files:
        docs.append([doc for doc in filter(None, re.split(r"Document [0-9]+", read_data))])
 
 docnum = 0
+time_slice = 0 # multiple documents can occur in one time slice
 topic_matrix = np.empty((num_sentilabs, num_docs, num_topics)) # holds a topic matrix for each senti-topic
 for i in range(len(list_of_files)):
     for doc in docs[i]:
@@ -43,7 +44,7 @@ for i in range(len(list_of_files)):
             row = np.array([float(el) for el in distr.split()])
             topic_matrix[sentilab, docnum, :] = row
         docnum = docnum + 1
-
+    time_slice = time_slice + 1
 
 # get the topic words
 # muss umgeschrieben werden auf .twords
@@ -58,6 +59,7 @@ for line in topic_keys_lines:
 
 # print(','.join(topic_words[8]))
 
+# 1st: sentiLabel, 3rd: topicLabel
 series = topic_matrix[1, :, 0] # the column represents the topic evolution "over time"
 # print(sum(series))
 plt.plot(series, '.')  # '.' specifies the type of mark to use on the graph

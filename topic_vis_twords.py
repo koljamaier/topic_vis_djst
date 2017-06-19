@@ -27,6 +27,14 @@ num_topics = 3
 num_sentilabs = 3
 time_slices = 5
 
+def chunks(l, n):
+    n = max(1, n)
+    return (l[i:i+n] for i in range(0, len(l), n))
+
+senti_topic_twords = []
+for index, i in enumerate(chunks(twords, num_sentilabs)):
+    senti_topic_twords.append(i) # create list for easier access (sentilabel x topiclabel)
+
 for t in range(time_slices):
     plt.subplot(1, time_slices , t + 1)  # plot numbering starts with 1
     plt.ylim(0, num_top_words + 0.5)  # stretch the y-axis to accommodate the words
@@ -34,8 +42,8 @@ for t in range(time_slices):
     plt.yticks([]) # remove y-axis markings ('ticks')
     plt.title('Time Slice {}'.format(t))
 
-    for i, word in enumerate(twords[8][t]):
-        plt.text(0.3, num_top_words-i-0.5, word, fontsize=12)
+    for i, word in enumerate(senti_topic_twords[1][1][t]):
+        plt.text(0.3, num_top_words-i-0.5, word, fontsize=10)
 
 plt.tight_layout()
 plt.show()

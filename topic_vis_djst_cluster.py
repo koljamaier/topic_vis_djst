@@ -1,5 +1,3 @@
-import json
-import numpy as np
 import pyLDAvis
 
 if __name__ == "__main__":
@@ -37,12 +35,6 @@ if __name__ == "__main__":
        temp = [line.split() for line in read_data.splitlines()]
        vocab, term_frequency = zip(*temp)
     term_frequency = [int(num) for num in term_frequency]
-
-    data = {'topic_term_dists': topic_term_dists,
-            'doc_topic_dists': doc_topic_dists,
-            'doc_lengths': doc_lengths,
-            'vocab': vocab,
-            'term_frequency': term_frequency}
 
     vis_data = pyLDAvis.prepare(topic_term_dists=topic_term_dists, doc_topic_dists=doc_topic_dists, doc_lengths=doc_lengths, vocab=vocab, term_frequency=term_frequency)
     pyLDAvis.save_html(vis_data, "test2.html")

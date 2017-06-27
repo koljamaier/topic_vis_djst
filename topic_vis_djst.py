@@ -52,21 +52,21 @@ for i in range(len(list_of_files)):
 # print(','.join(topic_words[8]))
 
 max_y = []
-
+topic = 0
 # 1st: sentiLabel, 3rd: topicLabel
-series = topic_matrix[1, :, 1] # the column represents the topic evolution "over time" for one topic and sentiment
+series = topic_matrix[1, :, topic] # the column represents the topic evolution "over time" for one topic and sentiment
 series_smooth = pd.rolling_mean(series, 2)
 plt.plot(series, '.', alpha=0.3, c="g")  # '.' specifies the type of mark to use on the graph
 plt.plot(series_smooth, '-', linewidth=2, c="g")
 max_y.append(np.max(series))
 
-series = topic_matrix[2, :, 1]
+series = topic_matrix[2, :, topic]
 series_smooth = pd.rolling_mean(series, 2)
 plt.plot(series, '.', alpha=0.3, c="r")
 plt.plot(series_smooth, '-', linewidth=2, c="r")
 max_y.append(np.max(series))
 
-series = topic_matrix[0, :, 1]
+series = topic_matrix[0, :, topic]
 series_smooth = pd.rolling_mean(series, 2)
 plt.plot(series, '.', alpha=0.3, c="g")
 plt.plot(series_smooth, '--', linewidth=2, c="b", alpha=0.3)
@@ -80,7 +80,6 @@ plt.title('Topic-Senti Visualization')
 plt.ylabel("Sentiment share")
 plt.xlabel("Time Slices")
 plt.xticks(volume_indexes)
-
 plt.xticks(volume_indexes, range(1, time_slice+1), rotation='horizontal')
 
 plt.tight_layout()

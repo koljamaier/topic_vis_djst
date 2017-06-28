@@ -40,7 +40,7 @@ for twords_tuple in zip(*docs): # groups twords by topic and sentiment label
 num_topics = 3
 num_sentilabs = 3
 time_slices = 5
-offset = 13
+offset = 0
 
 # chunks a list
 def chunks(l, n):
@@ -48,18 +48,24 @@ def chunks(l, n):
     return (l[i:i+n] for i in range(0, len(l), n))
 
 senti_topic_twords = []
-for index, i in enumerate(chunks(twords, num_sentilabs)):
+for index, i in enumerate(chunks(twords, num_topics)):
     senti_topic_twords.append(i) # create list for easier access (sentilabel x topiclabel)
 
-for t in range(time_slices):
-    plt.subplot(1, time_slices , t+1)  # plot numbering starts with 1
-    plt.ylim(0, num_top_words + 0.5)  # stretch the y-axis to accommodate the words
-    plt.xticks([])  # remove x-axis markings ('ticks')
-    plt.yticks([]) # remove y-axis markings ('ticks')
-    plt.title('Time Slice {}'.format(t+1+offset))
+# displays 5 topics for a given sentiment over time
+for i in range(5):
+    for k in range(num_topics): # topics
+        for t in range(time_slices):
+            plt.subplot(1, time_slices , t+1)  # plot numbering starts with 1
+            plt.ylim(0, num_top_words + 0.5)  # stretch the y-axis to accommodate the words
+            plt.xticks([])
+            plt.yticks([])
+            plt.title('Time Slice {}'.format(t+1+offset))
+            #1st senti, 2nd label
+            for i, word in enumerate(senti_topic_twords[1][k][t + offset]):
+                plt.text(0.3, num_top_words-i-0.5, word.decode("utf-8"), fontsize=10)
 
-    for i, word in enumerate(senti_topic_twords[2][0][t + offset]):
-        plt.text(0.3, num_top_words-i-0.5, word.decode("utf-8"), fontsize=10)
+        plt.tight_layout()
+        plt.show()
+    offset = offset +5
 
-plt.tight_layout()
-plt.show()
+print("done")

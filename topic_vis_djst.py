@@ -1,10 +1,27 @@
+# visualization for one topic over time
+# the curves represent the share of topic and sentiment in that epoch
+# a documents topic can have several sentiments, which must not sum up to one!
 import numpy as np
 import matplotlib.pyplot as plt
 import re
 import glob
 import pandas as pd
 
+def atoi(text):
+    return int(text) if text.isdigit() else text
+
+
+# This is needed to sort the .twords files
+def natural_keys(text):
+    '''
+    alist.sort(key=natural_keys) sorts in human order
+    http://nedbatchelder.com/blog/200712/human_sorting.html
+    (See Toothy's implementation in the comments)
+    '''
+    return [ atoi(c) for c in re.split('(\d+)', text) ]
+
 list_of_files = glob.glob('C:\\Users\\kmr\\Downloads\\JST-master\\JST-master\\result\\test\\t2\\*.others')
+list_of_files.sort(key=natural_keys)
 
 num_topics = num_sentilabs = num_docs = 0
 for file_name in list_of_files:
@@ -21,7 +38,7 @@ for file_name in list_of_files:
 
 docs = []
 list_of_files = glob.glob('C:\\Users\\kmr\\Downloads\\JST-master\\JST-master\\result\\test\\t2\\*.theta')
-
+list_of_files.sort(key=natural_keys)
 """
 .theta files represent documents by topic-proportions. This
 document is represented with 3 topics (col) and 3 sentiments (rows):
@@ -53,21 +70,22 @@ for i in range(len(list_of_files)):
 
 max_y = []
 topic = 0
+smoothness = 5
 # 1st: sentiLabel, 3rd: topicLabel
 series = topic_matrix[1, :, topic] # the column represents the topic evolution "over time" for one topic and sentiment
-series_smooth = pd.rolling_mean(series, 2)
+series_smooth = pd.rolling_mean(series, smoothness)
 plt.plot(series, '.', alpha=0.3, c="g")  # '.' specifies the type of mark to use on the graph
 plt.plot(series_smooth, '-', linewidth=2, c="g")
 max_y.append(np.max(series))
 
 series = topic_matrix[2, :, topic]
-series_smooth = pd.rolling_mean(series, 2)
+series_smooth = pd.rolling_mean(series, smoothness)
 plt.plot(series, '.', alpha=0.3, c="r")
 plt.plot(series_smooth, '-', linewidth=2, c="r")
 max_y.append(np.max(series))
 
 series = topic_matrix[0, :, topic]
-series_smooth = pd.rolling_mean(series, 2)
+series_smooth = pd.rolling_mean(series, smoothness)
 plt.plot(series, '.', alpha=0.3, c="g")
 plt.plot(series_smooth, '--', linewidth=2, c="b", alpha=0.3)
 max_y.append(np.max(series))

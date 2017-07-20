@@ -20,7 +20,7 @@ def natural_keys(text):
     '''
     return [ atoi(c) for c in re.split('(\d+)', text) ]
 
-list_of_files = glob.glob('C:\\Users\\kmr\\Downloads\\JST-master\\JST-master\\result\\test\\t2\\*.others')
+list_of_files = glob.glob('C:\\Users\\kmr\\Downloads\\JST-master\\JST-master\\result\\test\\brexit\\*.others')
 list_of_files.sort(key=natural_keys)
 
 num_topics = num_sentilabs = num_docs = 0
@@ -37,7 +37,7 @@ for file_name in list_of_files:
                    num_docs = num_docs + int(value)
 
 docs = []
-list_of_files = glob.glob('C:\\Users\\kmr\\Downloads\\JST-master\\JST-master\\result\\test\\t2\\*.theta')
+list_of_files = glob.glob('C:\\Users\\kmr\\Downloads\\JST-master\\JST-master\\result\\test\\brexit\\*.theta')
 list_of_files.sort(key=natural_keys)
 """
 .theta files represent documents by topic-proportions. This
@@ -69,24 +69,28 @@ for i in range(len(list_of_files)):
 # print(','.join(topic_words[8]))
 
 max_y = []
-topic = 0
-smoothness = 5
+topic = 1
+smoothness = 40
+
+
 # 1st: sentiLabel, 3rd: topicLabel
 series = topic_matrix[1, :, topic] # the column represents the topic evolution "over time" for one topic and sentiment
 series_smooth = pd.rolling_mean(series, smoothness)
-plt.plot(series, '.', alpha=0.3, c="g")  # '.' specifies the type of mark to use on the graph
+#plt.plot(series, '.', alpha=0.3, c="g")  # '.' specifies the type of mark to use on the graph
 plt.plot(series_smooth, '-', linewidth=2, c="g")
 max_y.append(np.max(series))
 
+
 series = topic_matrix[2, :, topic]
 series_smooth = pd.rolling_mean(series, smoothness)
-plt.plot(series, '.', alpha=0.3, c="r")
+#plt.plot(series, '.', alpha=0.3, c="r")
 plt.plot(series_smooth, '-', linewidth=2, c="r")
 max_y.append(np.max(series))
 
+
 series = topic_matrix[0, :, topic]
 series_smooth = pd.rolling_mean(series, smoothness)
-plt.plot(series, '.', alpha=0.3, c="g")
+#plt.plot(series, '.', alpha=0.3, c="b")
 plt.plot(series_smooth, '--', linewidth=2, c="b", alpha=0.3)
 max_y.append(np.max(series))
 

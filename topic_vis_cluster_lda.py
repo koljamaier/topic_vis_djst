@@ -41,6 +41,7 @@ if __name__ == "__main__":
         texts.append(stemmed_tokens)
         return len(stemmed_tokens)
 
+    # load already preprocessed data - in this case we dont need the above functions
     list_of_files = glob.glob('C:\\Users\\kmr\\Downloads\\JST-master\\JST-master\\data\\temp\\docs_for_python_parser\\pos_ext\\*.dat')
     list_of_files.sort(key=natural_keys)
 
@@ -58,7 +59,11 @@ if __name__ == "__main__":
             t[0]="" # discard d0...
             final_docs.append(" ".join(t).strip())
 
+    text_tokens = []
+    for doc in final_docs:
+        text_tokens.append(doc.split())
 
+    # prepare heldout document
     perp_doc = []
     with codecs.open('C:\\Users\\kmr\\Downloads\\JST-master\\JST-master\\data\\perp.dat', 'r', "utf-8") as f:  # evtl 'r', encoding="utf-8")
         read_data = f.read()
@@ -70,40 +75,20 @@ if __name__ == "__main__":
         t[0] = ""
         perp_doc_final.append(" ".join(t).strip())
 
+    perp_tokens = []
+    for doc in perp_doc_final:
+        perp_tokens.append(doc.split())
+
     corpus_size = len(perp_doc_final)
 
 
-    tokenizer = RegexpTokenizer(r'\w+')
-    en_stop = set(stopwords.words('english'))
-    p_stemmer = PorterStemmer()
-
-    # doc_set = final_docs
-    doc_set = []
-    # list for tokenized documents in loop
-    texts = []
-
-    for doc in final_docs:
-        texts.append(doc.split())
-
-    # turn our tokenized documents into a id <-> term dictionary
-    dictionary = corpora.Dictionary(texts)
-
-    # convert tokenized documents into a document-term matrix (fuer jeden count des documents bekommt die entsprechende vocab-id +1) Siehe gensim docs
-    corpus = [dictionary.doc2bow(text) for text in texts]
-
-    # generate LDA model
-    # num_topics > 9 fail. Open issue in pyLDAvis
+    # turn tokenized documents into id/term dict
+    dictionary = corpora.Dictionary(text_tokens)
+    # for each count the corresponding vocab-id gets + 1
+    corpus = [dictionary.doc2bow(text) for text in text_tokens]
+    test_heldout = [dictionary.doc2bow(text) for text in perp_tokens]
+    # num_topics > 9 fails. Open issue in pyLDAvis
     ldamodel = gensim.models.ldamodel.LdaModel(corpus, num_topics=3, id2word=dictionary, iterations=800) # passes=20, alpha='auto' EM für alpha,alpha="symmetric"
-
-    print(texts[len(texts)-1])
-    heldout = [texts[len(texts)-1], texts[len(texts)-2]]
-    heldout2 = [corpus[1], corpus[2]]
-
-    perp_texts = []
-    for doc in perp_doc_final:
-        perp_texts.append(doc.split())
-
-    test_heldout = [dictionary.doc2bow(text) for text in perp_texts]
 
     #print(ldamodel.log_perplexity(corpus[1]))
     perplex = ldamodel.bound(test_heldout)
@@ -115,4 +100,7 @@ if __name__ == "__main__":
     vis = pyLDAvis.gensim.prepare(ldamodel, corpus, dictionary)
     #pyLDAvis.display(vis)
     pyLDAvis.save_html(vis, "vw_lda_3topics.html")
+    for topic in ldamodel.show_topics(num_topics=3, num_words=10):
+        print(topic)
+
     print("Succes")
